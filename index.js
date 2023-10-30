@@ -30,7 +30,7 @@ app.post("/filmes", (req, res) => {
     const titulo = req.body.titulo;
     const sinopse = req.body.sinopse;
     //monta o objeto filme com esses 2 atributos
-    const filme = {titulo: titulo, sinope: sinopse};
+    const filme = {titulo: titulo, sinopse: sinopse};
     filmes.push(filme)
     //só para conferir
     res.json(filmes);
