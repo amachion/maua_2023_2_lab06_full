@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
+const bcrypt = require ('bcrypt');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -22,7 +23,7 @@ usuarioSchema.plugin(uniqueValidator);
 const Usuario = mongoose.model("Usuario", usuarioSchema);
 
 async function conectarMongoDB () {
-  await mongoose.connect (`mongodb+srv://pro_mac:mongo1234@cluster0.skf8n.mongodb.net/?retryWrites=true&w=majority`)
+  await mongoose.connect (`mongodb+srv://SEU_USUARIO:SUA_SENHA@cluster0.skf8n.mongodb.net/?retryWrites=true&w=majority`)
 }
 
 //ponto de acesso http://localhost:3000/ola
@@ -47,12 +48,19 @@ app.post("/filmes", async (req, res) => {
 })
 
 app.post("/signup", async (req, res) => {
-  const login = req.body.login;
-  const senha = req.body.senha;
-  const usuario = new Usuario({login: login, senha: senha});
-  const respMongo = await usuario.save();
-  console.log(respMongo);
-  
+  try {
+    const login = req.body.login;
+    const senha = req.body.senha;
+    const criptografada = await bcrypt.hash(senha, 10);
+    const usuario = new Usuario({login: login, senha: criptografada});
+    const respMongo = await usuario.save();
+    console.log(respMongo);
+    res.status(201).end();
+  }
+  catch (e) {
+    console.log(e);
+    res.status(409).end();
+  }
 })
 
 app.listen(3000, () => {
